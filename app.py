@@ -36,6 +36,7 @@ def register_memo() :
 
   memo = {
     "title" : title,
+    "likes" : 0,
     "content" : content
   }
 
@@ -45,6 +46,26 @@ def register_memo() :
   return jsonify({
     "result" : "success",
     "message" : "메모 등록 완료"
+  })
+
+@app.route("/memo",methods=["GET"])
+def read_All_memos() :
+
+  # 모든 카드들 DB에서 꺼내오기
+  # => list(db.컬렉션.find({} , {"_id" :0}))
+  memos = list(db.memos.find({},{"_id":0}))
+
+  if len(memos)== 0 :
+    return jsonify({
+      "result" : "failure",
+      "message" : "현재 저장된 메모가 존재하지 않습니다."
+    })
+
+  return jsonify({
+    "result" : "success",
+    # 모든 메모들 전달
+    "memos" : memos,
+    "message" : "모든 메모들 갖고오기 성공!"
   })
 
 if __name__ == "__main__" :
