@@ -53,8 +53,8 @@ def read_All_memos() :
   # 모든 카드들 DB에서 꺼내오기
   # => list(db.컬렉션.find({} , {"_id" :0}))//아이디 제거 (X)
   # => list(db.컬렉션.find({})) // 좋아요 기능을 위해=> id 속성 추가
-  memos = list(db.memos.find({}))
-
+  # "likes" 속성값의 내림차순 정렬 => sort("likes", -1); 
+  memos = list(db.memos.find({}).sort("likes",-1))
   # _id값들의 ObjectId 타입 => 문자열 값으로 변셩
   for memo in memos:
     memo["_id"] = str(memo["_id"])
@@ -131,6 +131,42 @@ def delete_memo() :
   return jsonify({
     "result" : "success",
     "message" : "해당 메모를 삭제하였습니다."
+  })
+
+@app.route("/memo/update",methods=["POST"])
+def update_memo() :
+  memoId = request.form["memoId"]
+  newTitle = request.form["newTitle"]
+  newContent = request.form["newContent"]
+  
+  # 1. memoId를 제대로 받지 못했다면,
+  if not memoId :
+    return jsonify({
+    "result" : "failure",
+    "message" : "서버에서 memoId를 받지 못했습니다."
+    })
+
+  # 2. memoId를 잘 받았다면, 해당 memo를 찾기
+
+  memo = db.memos.find_one({"_id":ObjectId(memoId)})
+
+  # 3. memoId에 해당되는 memo를 찾지 못했다면, => 오류 반환 
+  if memo is None : 
+    return jsonify({
+    "result" : "failure",
+    "message" :  "memoId에 해당되는 memo를 찾지 못했습니다."
+    })
+
+  # 4. 수정작업
+  db.memos.update_one({"_id" : ObjectId(memoId)},{"$set" : {
+    "title" : newTitle,
+    "content" : newContent 
+  }})
+
+  # 5. 클라이언트에게 성공 메시지 전달
+  return jsonify({
+    "result" : "success",
+    "message" : "해당 memo를 수정하였습니다."
   })
 
 if __name__ == "__main__" :
