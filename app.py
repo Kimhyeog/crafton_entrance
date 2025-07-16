@@ -1,11 +1,10 @@
 from flask import Flask,request,render_template, jsonify
 
-# request : API 라우터로 받은 데이터 처리를 위한 객체
-# josnify : API 응답값 전달을 위한 객체
-
 from pymongo import MongoClient
 
-# mongodb 갖고오기
+# 해당 id를 찾기 위해 필요한 라이브러리 : string 타입 => ObjectId 타입으로 변경
+from bson import ObjectId
+
 client = MongoClient("localhost",27017)
 
 db = client.dbjungle
@@ -52,8 +51,13 @@ def register_memo() :
 def read_All_memos() :
 
   # 모든 카드들 DB에서 꺼내오기
-  # => list(db.컬렉션.find({} , {"_id" :0}))
-  memos = list(db.memos.find({},{"_id":0}))
+  # => list(db.컬렉션.find({} , {"_id" :0}))//아이디 제거 (X)
+  # => list(db.컬렉션.find({})) // 좋아요 기능을 위해=> id 속성 추가
+  memos = list(db.memos.find({}))
+
+  # _id값들의 ObjectId 타입 => 문자열 값으로 변셩
+  for memo in memos:
+    memo["_id"] = str(memo["_id"])
 
   if len(memos)== 0 :
     return jsonify({
@@ -66,6 +70,37 @@ def read_All_memos() :
     # 모든 메모들 전달
     "memos" : memos,
     "message" : "모든 메모들 갖고오기 성공!"
+  })
+
+@app.route("/memo/like", methods=["POST"])
+def like_memo() :
+
+  # 1. 클라이언트에서 전달받기
+  memoId = request.form["memoId"]
+  # 2. 전달받은 memoId가 잘 받아진건지 확인
+  if not memoId :
+    return jsonify({
+      "result" : "failure",
+      "message" : "서버에서 memoId를 정상적으로 받지 못했습니다."
+    })
+  # 3. 잘받았다면, memos 중 해당 id가 있는지 찾기 => 하나만 찾아야 하므로, find_one()
+  memo = db.memos.find_one({"_id": ObjectId(memoId)})
+
+  # 4. 해당 memoId로 찾은 id가 없을 시, 오류 반환
+  if memo is None :
+    return jsonify({
+      "result" : "failure",
+      "message" : "좋아요를 누를 memo를 찾지 못했습니다."
+    })
+  # 5. 찾았다면, 해당 memo 좋아요값 수정 => db.memos.update_one()
+  newLikes = memo["likes"] + 1
+
+  db.memos.update_one({"_id" : ObjectId(memoId)},{"$set" : {"likes" : newLikes}})
+
+  # 성공 메시지 반환
+  return jsonify({
+    "result" : "success",
+    "message" : "좋아요를 성공했습니다."
   })
 
 if __name__ == "__main__" :
