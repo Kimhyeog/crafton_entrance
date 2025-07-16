@@ -65,7 +65,7 @@ function readAllMemos() {
     <p class="card-text">${content}</p>
     <p class="card-likes">👍 ${likes}</p>
     <button class="btn btn-info text-white edit-button">수정</button>
-    <button class="btn btn-danger delete-button">삭제</button>
+    <button class="btn btn-danger delete-button" onclick="deleteMemo('${_id}')">삭제</button>
     <button class="btn btn-outline-primary rounded-circle" onclick="likeMemo('${_id}')">좋아요</button>
   </div>
 `;
@@ -77,8 +77,26 @@ function readAllMemos() {
   });
 }
 
+function deleteMemo(memo_id) {
+  $.ajax({
+    type: "POST",
+    url: "/memo/delete",
+    data: { memoId: memo_id },
+    success: (res) => {
+      if (res.result === "success") {
+        alert(res.message);
+        window.location.reload();
+      } else alert(res.message);
+    },
+    error: () => alert("서버 접근 오류"),
+  });
+}
+
 $(document).ready(() => {
   // form 태그에 registerMemo() 핸들러 등록 방법
+  // => 이렇게 등록시,
+  //    <button type="submit" class="btn btn-primary" onclick="registerMemo()">저장하기</button>
+  // 버튼태그에 registerMemo() 핸들러에 등록할 필요 없다
   $("#memo-form").on("submit", registerMemo);
 
   // 페이지 접속시마다, 모든 메모들 출력되도록 하기

@@ -103,5 +103,35 @@ def like_memo() :
     "message" : "좋아요를 성공했습니다."
   })
 
+@app.route("/memo/delete",methods=["POST"])
+def delete_memo() :
+  # 1. 클라이언트에서 memoId 받기
+  memoId = request.form["memoId"]
+
+  # 2. 받은 memoId가 유효한지 확인
+  if not memoId :
+    return jsonify({
+      "result" : "failure",
+      "message" : "서버에서 memoId가 정상적으로 받지 못했습니다."
+    })
+  
+  # 3. 잘 받았다면, 탐색
+  memo = db.memos.find_one({"_id" : ObjectId(memoId)})
+
+  # 4. 해당 memo를 찾지 못했다면,
+  if memo is None :
+    return jsonify({
+      "result" : "failure",
+      "message" : "서버에서 memoId에 해당되는 memo를 찾지 못했습니다."
+    })
+  
+  # 5. 삭제
+  db.memos.delete_one({"_id" : ObjectId(memoId)})
+  
+  return jsonify({
+    "result" : "success",
+    "message" : "해당 메모를 삭제하였습니다."
+  })
+
 if __name__ == "__main__" :
   app.run("0.0.0.0",port=5000,debug=True)
