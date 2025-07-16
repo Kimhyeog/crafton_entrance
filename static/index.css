@@ -1,3 +1,50 @@
 * {
   font-family: "Gugi", sans-serif;
 }
+
+body {
+  background-color: #f8f9fa;
+}
+
+.headbox {
+  background-color: rgb(235, 236, 240);
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.headbox form {
+  width: 70%;
+}
+
+.version {
+  font-size: 24px;
+  background-color: #888;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.card-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.card-text {
+  margin-bottom: 10px;
+}
+
+.card-likes {
+  margin-bottom: 10px;
+}
+
+.link-like {
+  color: #007bff;
+  text-decoration: none;
+}
+
+#card-list {
+  display: grid;
+  /* 한 행(1fr column)당 : 3개씩*/
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}

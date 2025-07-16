@@ -64,9 +64,11 @@ function readAllMemos() {
     <p class="card-title fw-bold">${title}</p>
     <p class="card-text">${content}</p>
     <p class="card-likes">👍 ${likes}</p>
-    <button class="btn btn-info text-white edit-button" onclick="showEditForm('${_id}')">수정</button>
-    <button class="btn btn-danger delete-button" onclick="deleteMemo('${_id}')">삭제</button>
-    <button class="btn btn-outline-primary like-button rounded-circle" onclick="likeMemo('${_id}')">좋아요</button>
+    <div class"btn-box flex gap-1">
+      <button class="btn btn-info text-white edit-button" onclick="showEditForm('${_id}')">수정</button>
+      <button class="btn btn-danger delete-button" onclick="deleteMemo('${_id}')">삭제</button>
+      <button class="btn btn-outline-primary like-button rounded-circle" onclick="likeMemo('${_id}')">좋아요</button>
+    </div>
   </div>
 `;
 
