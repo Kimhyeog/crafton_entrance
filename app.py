@@ -5,12 +5,12 @@ from pymongo import MongoClient
 # 해당 id를 찾기 위해 필요한 라이브러리 : string 타입 => ObjectId 타입으로 변경
 from bson import ObjectId
 
-client = MongoClient("localhost",27017)
-
-db = client.dbjungle
-
-
 app = Flask(__name__)
+
+
+client = MongoClient("mongodb://3.34.46.1:27017")
+db = client["dbjungle"]
+
 
 
 @app.route("/")
